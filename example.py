@@ -17,3 +17,6 @@ t1 = process_time()
 m.mat_add(n)
 print("Elaspsed time : ", process_time() - t1)
 print(m)
+
+output = nm.add(m, n)
+print(output)

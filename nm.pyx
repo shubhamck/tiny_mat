@@ -53,4 +53,21 @@ cdef class Matrix:
         # self._c_matrix = cnm.mat_add_threaded(self._c_matrix, m_ptr)
 
 
-        
+def add(Matrix a, Matrix b):
+    r1, c1 = a.shape()
+    r2, c2 = b.shape()
+
+    cdef cnm.Matrix* res_mat;
+    cdef cnm.Matrix* a_ptr = a._c_matrix
+    cdef cnm.Matrix* b_ptr = b._c_matrix
+    if c1 != r2:
+        raise ValueError("Matrix dimension mismatch")
+    else :
+        res_mat = cnm.mat_add(a_ptr, b_ptr);
+
+        res = Matrix(r1, c2)
+        res._c_matrix = res_mat
+
+        return res
+
+
