@@ -1,0 +1,3 @@
+*.so
+nm.c
+build/
