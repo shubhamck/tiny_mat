@@ -2,6 +2,7 @@ import nm
 import numpy as np
 from time import process_time
 
+# currently only use multiples of 4 for number of rows
 ROWS = 16
 COLS = 16
 
