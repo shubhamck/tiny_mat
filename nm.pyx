@@ -49,7 +49,9 @@ cdef class Matrix:
         cdef cnm.Matrix* m_ptr = m._c_matrix
         if m_ptr is NULL:
             raise MemoryError("Are you passing an empty matrix?")
-        self._c_matrix = cnm.mat_add(self._c_matrix, m_ptr)
+        cdef cnm.Matrix* result = cnm.mat_add(self._c_matrix, m_ptr)
+        cnm.free_matrix(self._c_matrix)
+        self._c_matrix = result
         # self._c_matrix = cnm.mat_add_threaded(self._c_matrix, m_ptr)
 
 
