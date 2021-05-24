@@ -19,4 +19,5 @@ cdef extern from "nm.h":
     void set(Matrix* m, int row_id, int col_id, double value);
     Matrix* mat_add(Matrix* m1, Matrix* m2)
     Matrix* mat_add_threaded(Matrix* m1, Matrix* m2)
+    Matrix* scale(Matrix* m, double s)
 

@@ -34,4 +34,4 @@ struct AddArgs {
 	double* o_data;
 };
 typedef struct AddArgs AddArgs;
-
+Matrix* scale(Matrix* m, double s);

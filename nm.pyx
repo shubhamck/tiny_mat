@@ -72,4 +72,13 @@ def add(Matrix a, Matrix b):
 
         return res
 
+def scale(Matrix a, double s):
+    cdef cnm.Matrix* res;
+    res = cnm.scale(a._c_matrix, s)
+    r1, c1 = a.shape()
+    r = Matrix(r1, c1)
+    r._c_matrix = res
+    return r
+
+
 

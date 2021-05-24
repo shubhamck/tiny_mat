@@ -21,3 +21,6 @@ print(m)
 
 output = nm.add(m, n)
 print(output)
+
+scaled_output = nm.scale(output, 3)
+print(scaled_output)

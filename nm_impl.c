@@ -139,3 +139,13 @@ Matrix* mat_add(Matrix* m1, Matrix* m2) {
 	}
 	return sum;
 }
+Matrix* scale(Matrix* m, double s) {
+	int r = rows(m);
+	int c = cols(m);
+	Matrix* res = create(r, c);
+	int i = 0;
+	for (i = 0; i < r * c; ++i) {
+		res->data[i] = s * m->data[i];
+	}
+	return res;
+}
