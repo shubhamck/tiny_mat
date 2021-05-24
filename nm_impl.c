@@ -1,5 +1,6 @@
 #include <pthread.h>
 #include <stdio.h>
+#include <sys/sysinfo.h>
 #include "nm.h"
 void hey() { printf("Heyeye!!!!!\n"); }
 int add(int a, int b) { return a + b; }
@@ -102,7 +103,7 @@ Matrix* mat_add_threaded(Matrix* m1, Matrix* m2) {
 	Matrix* sum = create(r1, c1);
 	int i = 0;
 	int j = 0;
-	int NUM_THREADS = 4;
+	int NUM_THREADS = get_nprocs_conf();
 	pthread_t* threads =
 	    (pthread_t*)malloc(NUM_THREADS * sizeof(pthread_t));
 	AddArgs* add_args = (AddArgs*)malloc(NUM_THREADS * sizeof(AddArgs));
@@ -117,6 +118,9 @@ Matrix* mat_add_threaded(Matrix* m1, Matrix* m2) {
 	for (i = 0; i < NUM_THREADS; ++i) {
 		pthread_join(threads[i], NULL);
 	}
+
+	// free threads
+	free(threads);
 	return sum;
 }
 Matrix* mat_add(Matrix* m1, Matrix* m2) {
@@ -149,3 +153,4 @@ Matrix* scale(Matrix* m, double s) {
 	}
 	return res;
 }
+Matrix* scale_threaded(Matrix* m, double s) { return NULL; }

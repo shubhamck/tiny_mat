@@ -7,20 +7,14 @@ ROWS = 16
 COLS = 16
 
 m = nm.Matrix(ROWS, COLS)
-n = nm.Matrix(ROWS, COLS)
-
-print("Shape : ", m.shape())
-
 m.set_all(5)
-n.set_all(6)
+n = nm.Matrix(ROWS, COLS)
+n.set_all(4)
 
-t1 = process_time()
+t = process_time()
+
 m.mat_add(n)
-print("Elaspsed time : ", process_time() - t1)
+
+print("Elapsed time : ", process_time() - t)
+
 print(m)
-
-output = nm.add(m, n)
-print(output)
-
-scaled_output = nm.scale(output, 3)
-print(scaled_output)

@@ -16,8 +16,10 @@ cdef class Matrix:
             raise MemoryError("Failed to initialize Matrix")
 
     def __dealloc__(self):
+        print("Calling dealloc")
         if self._c_matrix is not NULL:
             cnm.free_matrix(self._c_matrix)
+            print("Done dealloc")
     
     def shape(self):
         r = cnm.rows(self._c_matrix)
@@ -49,10 +51,15 @@ cdef class Matrix:
         cdef cnm.Matrix* m_ptr = m._c_matrix
         if m_ptr is NULL:
             raise MemoryError("Are you passing an empty matrix?")
-        cdef cnm.Matrix* result = cnm.mat_add(self._c_matrix, m_ptr)
+        # cdef cnm.Matrix* result = cnm.mat_add(self._c_matrix, m_ptr)
+        cdef cnm.Matrix* result= cnm.mat_add_threaded(self._c_matrix, m_ptr)
         cnm.free_matrix(self._c_matrix)
         self._c_matrix = result
-        # self._c_matrix = cnm.mat_add_threaded(self._c_matrix, m_ptr)
+
+    def scale(self, double s):
+        cdef cnm.Matrix* res = cnm.scale(self._c_matrix, s)
+        cnm.free_matrix(self._c_matrix)
+        self._c_matrix = res
 
 
 def add(Matrix a, Matrix b):

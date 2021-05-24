@@ -35,3 +35,4 @@ struct AddArgs {
 };
 typedef struct AddArgs AddArgs;
 Matrix* scale(Matrix* m, double s);
+Matrix* scale_threaded(Matrix* m, double s);
