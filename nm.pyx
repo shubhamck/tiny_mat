@@ -10,7 +10,7 @@ cdef class Matrix:
     cdef cnm.Matrix* _c_matrix;
 
 
-    def __init__(self, rows, cols):
+    def __cinit__(self, rows, cols):
         self._c_matrix = cnm.create(rows, cols)
         if self._c_matrix is NULL:
             raise MemoryError("Failed to initialize Matrix")
@@ -25,6 +25,35 @@ cdef class Matrix:
         r = cnm.rows(self._c_matrix)
         c = cnm.cols(self._c_matrix)
         return [r, c]
+
+    cdef set_ptr(self, cnm.Matrix* m):
+        # first free the earlier memory
+        cnm.free_matrix(self._c_matrix)
+        # then assign the new pointer
+        self._c_matrix = m
+
+    def __getitem__(self, some_slice):
+        print(some_slice)
+        r , c = self.shape()
+
+        if isinstance(some_slice, tuple):
+            if isinstance(some_slice[0], slice):
+                row_slice = some_slice[0]
+                col_slice = some_slice[1]
+                m = Matrix(0, 0)
+                row_start = row_slice.start if row_slice.start != None else 0
+                row_end = row_slice.stop if row_slice.stop != None else r
+                col_start = col_slice.start if col_slice.start != None else 0
+                col_end = col_slice.stop if col_slice.stop != None else c
+                # m._c_matrix = cnm.get_slice(self._c_matrix, row_start, row_end, col_start, col_end)
+                m.set_ptr(cnm.get_slice(self._c_matrix, row_start, row_end, col_start, col_end))
+                return m
+            else:
+                return cnm.get(self._c_matrix, some_slice[0], some_slice[1])
+
+        if isinstance(some_slice, slice):
+            print("Slice : ", some_slice.start, some_slice.stop, some_slice.step)
+        return 0
 
 
     def __str__(self):
@@ -60,6 +89,50 @@ cdef class Matrix:
         cdef cnm.Matrix* res = cnm.scale(self._c_matrix, s)
         cnm.free_matrix(self._c_matrix)
         self._c_matrix = res
+
+
+    def __add__(Matrix self, Matrix other):
+        if isinstance(other, Matrix):
+            if other.shape() != self.shape():
+                ValueError("Dimension mismatch")
+            else:
+                res = Matrix(0,0)
+                res.set_ptr(cnm.mat_add(self._c_matrix, other._c_matrix))
+                return res
+        else:
+            TypeError("Argument should be a matrix")
+
+
+    def __eq__(Matrix self, Matrix other):
+        if isinstance(other, Matrix):
+            return cnm.is_equal(self._c_matrix, other._c_matrix)
+        else:
+            TypeError("Argument should be a matrix")
+
+
+    @staticmethod
+    def zeros( shape):
+        if isinstance(shape, tuple):
+            r, c = shape[0], shape[1]
+            m = Matrix(r, c)
+            m.set_all(0.0)
+            return m
+        else:
+            m = Matrix(shape, 1)
+            m.set_all(0.0)
+            return m
+
+    @staticmethod
+    def ones( shape):
+        if isinstance(shape, tuple):
+            r, c = shape[0], shape[1]
+            m = Matrix(r, c)
+            m.set_all(1.0)
+            return m
+        else:
+            m = Matrix(shape, 1)
+            m.set_all(1.0)
+            return m
 
 
 def add(Matrix a, Matrix b):

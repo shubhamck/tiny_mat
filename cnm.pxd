@@ -1,3 +1,4 @@
+from libc cimport bool
 cdef extern from "nm.h":
 
     void hey()
@@ -20,4 +21,6 @@ cdef extern from "nm.h":
     Matrix* mat_add(Matrix* m1, Matrix* m2)
     Matrix* mat_add_threaded(Matrix* m1, Matrix* m2)
     Matrix* scale(Matrix* m, double s)
+    Matrix* get_slice(Matrix* m, int row_start, int row_end, int col_start, int col_end)
+    bint is_equal(Matrix* m1, Matrix* m2)
 

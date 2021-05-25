@@ -153,4 +153,37 @@ Matrix* scale(Matrix* m, double s) {
 	}
 	return res;
 }
-Matrix* scale_threaded(Matrix* m, double s) { return NULL; }
+Matrix* scale_threaded(Matrix* m, double s) {
+	if (m == NULL) {
+		return NULL;
+	}
+	Matrix* res = create(m->rows, m->cols);
+	return m;
+}
+Matrix* get_slice(Matrix* m, int row_start, int row_end, int col_start,
+		  int col_end) {
+	Matrix* res = create(row_end - row_start, col_end - col_start);
+	int i = 0;
+	int j = 0;
+	int iter = 0;
+	for (i = row_start; i < row_end; ++i) {
+		for (j = col_start; j < col_end; ++j) {
+			res->data[iter] = get(m, i, j);
+			++iter;
+		}
+	}
+	return res;
+}
+
+bool is_equal(Matrix* m1, Matrix* m2) {
+	if (m1->rows != m2->rows || m1->cols != m2->cols) {
+		return false;
+	}
+	int i = 0;
+	for (i = 0; i < m1->rows * m1->cols; ++i) {
+		if (m1->data[i] != m2->data[i]) {
+			return false;
+		}
+	}
+	return true;
+}

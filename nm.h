@@ -1,4 +1,5 @@
 #include <pthread.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 void hey();
@@ -36,3 +37,6 @@ struct AddArgs {
 typedef struct AddArgs AddArgs;
 Matrix* scale(Matrix* m, double s);
 Matrix* scale_threaded(Matrix* m, double s);
+Matrix* get_slice(Matrix* m, int row_start, int row_end, int col_start,
+		  int col_end);
+bool is_equal(Matrix* m1, Matrix* m2);
