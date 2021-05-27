@@ -16,10 +16,8 @@ cdef class Matrix:
             raise MemoryError("Failed to initialize Matrix")
 
     def __dealloc__(self):
-        print("Calling dealloc")
         if self._c_matrix is not NULL:
             cnm.free_matrix(self._c_matrix)
-            print("Done dealloc")
     
     def shape(self):
         r = cnm.rows(self._c_matrix)
@@ -27,13 +25,15 @@ cdef class Matrix:
         return [r, c]
 
     cdef set_ptr(self, cnm.Matrix* m):
+
+        if m is NULL:
+            raise ValueError("Passed a null value")
         # first free the earlier memory
         cnm.free_matrix(self._c_matrix)
         # then assign the new pointer
         self._c_matrix = m
 
     def __getitem__(self, some_slice):
-        print(some_slice)
         r , c = self.shape()
 
         if isinstance(some_slice, tuple):
@@ -45,19 +45,54 @@ cdef class Matrix:
                 row_end = row_slice.stop if row_slice.stop != None else r
                 col_start = col_slice.start if col_slice.start != None else 0
                 col_end = col_slice.stop if col_slice.stop != None else c
-                # m._c_matrix = cnm.get_slice(self._c_matrix, row_start, row_end, col_start, col_end)
                 m.set_ptr(cnm.get_slice(self._c_matrix, row_start, row_end, col_start, col_end))
                 return m
             else:
                 return cnm.get(self._c_matrix, some_slice[0], some_slice[1])
 
         if isinstance(some_slice, slice):
-            print("Slice : ", some_slice.start, some_slice.stop, some_slice.step)
+            row_start = some_slice.start if some_slice.start != None else 0
+            row_end = some_slice.stop if some_slice.stop != None else r
+            m = Matrix(0, 0)
+            m.set_ptr(cnm.get_slice(self._c_matrix, row_start, row_end, 0, c))
+            return m
         return 0
 
+    def __setitem__(self, some_slice, Matrix value):
+        r , c = self.shape()
+
+        if isinstance(some_slice, tuple):
+            if isinstance(some_slice[0], slice):
+                if not isinstance(value, Matrix):
+                    raise TypeError("Input should be a Matrix type")
+                row_slice = some_slice[0]
+                col_slice = some_slice[1]
+                m = Matrix(0, 0)
+                row_start = row_slice.start if row_slice.start != None else 0
+                row_end = row_slice.stop if row_slice.stop != None else r
+                col_start = col_slice.start if col_slice.start != None else 0
+                col_end = col_slice.stop if col_slice.stop != None else c
+                success = cnm.set_slice(self._c_matrix, value._c_matrix, row_start, row_end, col_start, col_end)
+                if not success:
+                    raise ValueError("Error dueing setting check dimension")
+            # else:
+            #     if not isinstance(value, double):
+            #         raise TypeError("Input should be double")
+            #     success =  cnm.set(self._c_matrix, some_slice[0], some_slice[1], value)
+            #     if not success:
+            #         raise ValueError("Error dueing setting check dimension")
+
+
+        if isinstance(some_slice, slice):
+            row_start = some_slice.start if some_slice.start != None else 0
+            row_end = some_slice.stop if some_slice.stop != None else r
+            success = cnm.set_slice(self._c_matrix, value._c_matrix, row_start, row_end, 0, c)
+            if not success:
+                raise ValueError("Error dueing setting check dimension")
+                
 
     def __str__(self):
-        sol = "["
+        sol = "\n["
         r, c = self.shape()
         for i in range(r):
             sol += "["
@@ -70,6 +105,7 @@ cdef class Matrix:
 
     def set(self , int row, int col, double val):
         cnm.set(self._c_matrix, row, col, val)
+
     def set_all(self , double val):
         r, c = self.shape()
         for i in range(r):
@@ -102,6 +138,16 @@ cdef class Matrix:
         else:
             TypeError("Argument should be a matrix")
 
+    def __sub__(Matrix self, Matrix other):
+        if isinstance(other, Matrix):
+            if other.shape() != self.shape():
+                ValueError("Dimension mismatch")
+            else:
+                res = Matrix(0,0)
+                res.set_ptr(cnm.mat_sub(self._c_matrix, other._c_matrix))
+                return res
+        else:
+            TypeError("Argument should be a matrix")
 
     def __eq__(Matrix self, Matrix other):
         if isinstance(other, Matrix):
@@ -133,6 +179,12 @@ cdef class Matrix:
             m = Matrix(shape, 1)
             m.set_all(1.0)
             return m
+
+    @staticmethod
+    def eye(int dim):
+        m = Matrix(0,0)
+        m.set_ptr(cnm.eye(dim))
+        return m
 
 
 def add(Matrix a, Matrix b):

@@ -143,6 +143,26 @@ Matrix* mat_add(Matrix* m1, Matrix* m2) {
 	}
 	return sum;
 }
+Matrix* mat_sub(Matrix* m1, Matrix* m2) {
+	int r1 = rows(m1);
+	int r2 = rows(m2);
+	int c1 = cols(m1);
+	int c2 = cols(m2);
+	if (r1 != r2 || c1 != c2) {
+		return NULL;
+	}
+	Matrix* sub = create(r1, c1);
+	int i = 0;
+	int j = 0;
+	for (i = 0; i < r1; ++i) {
+		for (j = 0; j < c1; ++j) {
+			double a = get(m1, i, j);
+			double b = get(m2, i, j);
+			set(sub, i, j, a - b);
+		}
+	}
+	return sub;
+}
 Matrix* scale(Matrix* m, double s) {
 	int r = rows(m);
 	int c = cols(m);
@@ -162,6 +182,16 @@ Matrix* scale_threaded(Matrix* m, double s) {
 }
 Matrix* get_slice(Matrix* m, int row_start, int row_end, int col_start,
 		  int col_end) {
+	if (m == NULL) {
+		fprintf(stderr, "Invalid input matrix");
+		return NULL;
+	}
+	int r = m->rows;
+	int c = m->cols;
+	if (row_start < 0 || row_end > r || col_start < 0 || col_end > c) {
+		fprintf(stderr, "Invalid slice arguments");
+		return NULL;
+	}
 	Matrix* res = create(row_end - row_start, col_end - col_start);
 	int i = 0;
 	int j = 0;
@@ -187,3 +217,43 @@ bool is_equal(Matrix* m1, Matrix* m2) {
 	}
 	return true;
 }
+Matrix* from_csv(FILE* file) {
+	if (file == NULL) {
+		fprintf(stderr, "Invalid file");
+		return NULL;
+	}
+	return NULL;
+}
+Matrix* eye(int dim) {
+	Matrix* res = zeros(dim, dim);
+	int i = 0;
+	for (i = 0; i < dim; ++i) {
+		set(res, i, i, 1.0);
+	}
+	return res;
+}
+bool set_slice(Matrix* m, Matrix* input_slice, int row_start, int row_end,
+	       int col_start, int col_end) {
+	int m_r = m->rows;
+	int m_c = m->cols;
+
+	int i_r = input_slice->rows;
+	int i_c = input_slice->cols;
+
+	if (i_r != row_end - row_start || i_c != col_end - col_start) {
+		fprintf(stderr, "Input slice is not of correct dimension");
+		return false;
+	}
+
+	int i = 0;
+	int j = 0;
+	int iter = 0;
+	for (i = row_start; i < row_end; ++i) {
+		for (j = col_start; j < col_end; ++j) {
+			set(m, i, j, input_slice->data[iter]);
+		}
+	}
+
+	return true;
+}
+

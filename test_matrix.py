@@ -8,19 +8,33 @@ class TestMatrix(unittest.TestCase):
         m = Matrix(4, 5)
         assert m.shape() == [4, 5]
 
+    def test_equal(self):
+        m = Matrix.zeros((5, 6))
+        n = Matrix.zeros((5, 6))
+        assert m == n
+
     def test_get_item(self):
+        m = Matrix.ones((7, 8))
+        n = m[3:6, 2:7]
+        n_gt = Matrix.ones((3, 5))
+        assert n.shape() == [3, 5]
+        assert n == n_gt
+
+        n = m[3:6]
+        n_gt = Matrix.ones((3, 8))
+        assert n == n_gt
         pass
+
+    def test_set_item(self):
+        m = Matrix.zeros((10, 10))
+        m[0:5, 3:5] = Matrix.ones((5, 2))
+        print(m)
 
     def test_zeros(self):
         m = Matrix.zeros((5, 4))
         assert m.shape() == [5, 4]
         m = Matrix.zeros(9)
         assert m.shape() == [9, 1]
-
-    def test_equal(self):
-        m = Matrix.zeros((5, 6))
-        n = Matrix.zeros((5, 6))
-        assert m == n
 
     def test_ones(self):
         m = Matrix.ones((5, 4))
@@ -29,6 +43,14 @@ class TestMatrix(unittest.TestCase):
         m = Matrix.ones(9)
         assert m.shape() == [9, 1]
 
+    def test_eye(self):
+        m = Matrix.eye(3)
+        m_gt = Matrix.zeros((3, 3))
+        m_gt.set(0, 0, 1.0)
+        m_gt.set(1, 1, 1.0)
+        m_gt.set(2, 2, 1.0)
+        assert m == m_gt
+
     def test_add(self):
         m = Matrix.ones((4, 5))
         n = Matrix(4, 5)
@@ -36,6 +58,16 @@ class TestMatrix(unittest.TestCase):
         res = m + n
         res_gt = Matrix(4, 5)
         res_gt.set_all(6.0)
+        assert res.shape() == [4, 5]
+        assert res == res_gt
+
+    def test_sub(self):
+        m = Matrix.ones((4, 5))
+        n = Matrix(4, 5)
+        n.set_all(5.0)
+        res = m - n
+        res_gt = Matrix(4, 5)
+        res_gt.set_all(-4.0)
         assert res.shape() == [4, 5]
         assert res == res_gt
 
