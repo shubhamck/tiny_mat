@@ -168,6 +168,11 @@ cdef class Matrix:
         else:
             TypeError("Argument should be a matrix")
 
+    def transpose(self):
+        res = Matrix(0,0)
+        res.set_ptr(cnm.transpose(self._c_matrix))
+        return res
+
 
     @staticmethod
     def zeros( shape):

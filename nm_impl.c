@@ -257,3 +257,17 @@ bool set_slice(Matrix* m, Matrix* input_slice, int row_start, int row_end,
 	return true;
 }
 
+Matrix* transpose(Matrix* m) {
+	int m_r = m->rows;
+	int m_c = m->cols;
+
+	Matrix* res = create(m_c, m_r);
+	int i, j;
+	for (i = 0; i < m_c; ++i) {
+		for (j = 0; j < m_r; ++j) {
+			set(res, i, j, get(m, j, i));
+		}
+	}
+
+	return res;
+}

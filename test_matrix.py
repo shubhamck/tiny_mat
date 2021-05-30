@@ -75,6 +75,14 @@ class TestMatrix(unittest.TestCase):
         assert res.shape() == [4, 5]
         assert res == res_gt
 
+    def test_transpose(self):
+        m = Matrix.ones((3, 4))
+        t = m.transpose()
+        assert t == Matrix.ones((4, 3))
+        m = Matrix.ones((5, 3))
+        t = m.transpose()
+        assert t == Matrix.ones((3, 5))
+
 
 if __name__ == "__main__":
     unittest.main()
