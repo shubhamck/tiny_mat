@@ -58,37 +58,50 @@ cdef class Matrix:
             return m
         return 0
 
-    def __setitem__(self, some_slice, Matrix value):
+    # def __setitem__(self, some_slice, float value):
+    #     r , c = self.shape()
+    #     if isinstance(some_slice, tuple):
+    #         row = some_slice[0]
+    #         col = some_slice[1]
+    #         self.set(row, col, value)
+    #     else:
+    #         print("Its is slice")
+            
+
+
+    def __setitem__(self, some_slice, value):
         r , c = self.shape()
 
         if isinstance(some_slice, tuple):
             if isinstance(some_slice[0], slice):
-                if not isinstance(value, Matrix):
+                if isinstance(value, Matrix):
+                    row_slice = some_slice[0]
+                    col_slice = some_slice[1]
+                    m = Matrix(0, 0)
+                    row_start = row_slice.start if row_slice.start != None else 0
+                    row_end = row_slice.stop if row_slice.stop != None else r
+                    col_start = col_slice.start if col_slice.start != None else 0
+                    col_end = col_slice.stop if col_slice.stop != None else c
+
+                    val_shape = value.shape()
+                    if row_end - row_start != val_shape[0] or col_end - col_start != val_shape[1]:
+                        raise ValueError("Input dimension mismatch")
+                    success = cnm.set_slice(self._c_matrix, (<Matrix?>value)._c_matrix, row_start, row_end, col_start, col_end)
+                else:
                     raise TypeError("Input should be a Matrix type")
-                row_slice = some_slice[0]
-                col_slice = some_slice[1]
-                m = Matrix(0, 0)
-                row_start = row_slice.start if row_slice.start != None else 0
-                row_end = row_slice.stop if row_slice.stop != None else r
-                col_start = col_slice.start if col_slice.start != None else 0
-                col_end = col_slice.stop if col_slice.stop != None else c
-                success = cnm.set_slice(self._c_matrix, value._c_matrix, row_start, row_end, col_start, col_end)
-                if not success:
-                    raise ValueError("Error dueing setting check dimension")
-            # else:
-            #     if not isinstance(value, double):
-            #         raise TypeError("Input should be double")
-            #     success =  cnm.set(self._c_matrix, some_slice[0], some_slice[1], value)
-            #     if not success:
-            #         raise ValueError("Error dueing setting check dimension")
-
-
-        if isinstance(some_slice, slice):
+            else:
+                if not isinstance(value, float):
+                    raise TypeError("Input should be double")
+                success =  cnm.set(self._c_matrix, some_slice[0], some_slice[1], value)
+        elif isinstance(some_slice, slice):
             row_start = some_slice.start if some_slice.start != None else 0
             row_end = some_slice.stop if some_slice.stop != None else r
-            success = cnm.set_slice(self._c_matrix, value._c_matrix, row_start, row_end, 0, c)
-            if not success:
-                raise ValueError("Error dueing setting check dimension")
+            if isinstance(value, Matrix):
+
+                val_shape = value.shape()
+                if row_end - row_start != val_shape[0]:
+                    raise ValueError("Input dimension mismatch")
+                success = cnm.set_slice(self._c_matrix, (<Matrix?>value)._c_matrix, row_start, row_end, 0, c)
                 
 
     def __str__(self):

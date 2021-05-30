@@ -28,7 +28,11 @@ class TestMatrix(unittest.TestCase):
     def test_set_item(self):
         m = Matrix.zeros((10, 10))
         m[0:5, 3:5] = Matrix.ones((5, 2))
-        print(m)
+        assert m[0:5, 3:5] == Matrix.ones((5, 2))
+        m[1, 1] = 45454.0
+        assert m[1, 1] == 45454.0
+        m[3:5] = Matrix.zeros((2, 10))
+        assert m[3:5] == Matrix.zeros((2, 10))
 
     def test_zeros(self):
         m = Matrix.zeros((5, 4))

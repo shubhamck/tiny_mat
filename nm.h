@@ -43,5 +43,4 @@ Matrix* get_slice(Matrix* m, int row_start, int row_end, int col_start,
 bool set_slice(Matrix* m, Matrix* input_slice, int row_start, int row_end,
 	       int col_start, int col_end);
 bool is_equal(Matrix* m1, Matrix* m2);
-Matrix* from_csv(FILE* file);
 Matrix* eye(int dim);
