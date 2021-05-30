@@ -28,4 +28,5 @@ cdef extern from "nm.h":
     bint set_slice(Matrix* m, Matrix* input_slice, int row_start, int row_end,
 	       int col_start, int col_end)
     Matrix* transpose(Matrix* m)
+    Matrix* mat_mul(Matrix* m1, Matrix* m2)
 

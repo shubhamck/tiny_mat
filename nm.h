@@ -45,3 +45,4 @@ bool set_slice(Matrix* m, Matrix* input_slice, int row_start, int row_end,
 bool is_equal(Matrix* m1, Matrix* m2);
 Matrix* eye(int dim);
 Matrix* transpose(Matrix* m);
+Matrix* inverse(Matrix* m);

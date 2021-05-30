@@ -58,7 +58,19 @@ Matrix* mat_mul(Matrix* m1, Matrix* m2) {
 	if (c1 != r2) {
 		return NULL;
 	}
-	return NULL;
+	Matrix* res = create(r1, c2);
+	int i, j, k;
+	double sum;
+	for (i = 0; i < r1; ++i) {
+		for (j = 0; j < c2; ++j) {
+			sum = 0;
+			for (k = 0; k < c1; ++k) {
+				sum += get(m1, i, k) * get(m2, k, j);
+			}
+			set(res, i, j, sum);
+		}
+	}
+	return res;
 }
 void* add_func(void* args) {
 	AddArgs* add_args = (AddArgs*)(args);
@@ -270,4 +282,13 @@ Matrix* transpose(Matrix* m) {
 	}
 
 	return res;
+}
+Matrix* inverse(Matrix* m) {
+	// we are going to use Gauss Jordan m_methods
+	int r = m->rows;
+	int c = m->cols;
+	if (r != c) {
+		return NULL;
+	}
+	return NULL;
 }

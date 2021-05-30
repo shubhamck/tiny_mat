@@ -83,6 +83,28 @@ class TestMatrix(unittest.TestCase):
         t = m.transpose()
         assert t == Matrix.ones((3, 5))
 
+    def test_mul(self):
+        m = Matrix.ones((2, 2))
+        m[1, 1] = 2.0
+        m[1, 0] = 4.0
+
+        n = Matrix.ones((2, 2))
+        res = m * n
+        res_gt = Matrix.ones((2, 2))
+        res_gt[0, 0] = 2.0
+        res_gt[0, 1] = 2.0
+        res_gt[1, 0] = 6.0
+        res_gt[1, 1] = 6.0
+        assert res == res_gt
+
+        res = m * 3
+
+        res_gt[0, 0] = 3.0
+        res_gt[0, 1] = 3.0
+        res_gt[1, 0] = 12.0
+        res_gt[1, 1] = 6.0
+        assert res == res_gt
+
 
 if __name__ == "__main__":
     unittest.main()

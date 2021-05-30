@@ -173,6 +173,19 @@ cdef class Matrix:
         res.set_ptr(cnm.transpose(self._c_matrix))
         return res
 
+    def __mul__(Matrix self, m):
+        if isinstance(m, Matrix):
+            res = Matrix(0,0)
+            res.set_ptr(cnm.mat_mul(self._c_matrix, (<Matrix?>m)._c_matrix))
+            return res
+        elif isinstance(m, float) or isinstance(m, int):
+            # regular scale oepration
+            res = Matrix(0,0)
+            res.set_ptr(cnm.scale(self._c_matrix, m))
+            return res
+        else:
+            raise TypeError("Can only multipy by matrices and scalars")
+
 
     @staticmethod
     def zeros( shape):
