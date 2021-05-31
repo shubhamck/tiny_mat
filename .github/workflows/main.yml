@@ -1,0 +1,12 @@
+on: [push]
+
+jobs:
+  build_tiny_mat:
+    runs-on: ubuntu-latest
+    name: build_tiny_mat
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: build
+        id: build
+        uses: ./
