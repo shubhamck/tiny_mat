@@ -1,7 +1,34 @@
+#include "nm.h"
+
 #include <pthread.h>
 #include <stdio.h>
+
+#if __APPLE__ && __MACH__
+
+#include <sys/sysctl.h>
+
+int get_cpu_cores()
+{
+  int count = 0;
+  size_t count_len = sizeof(count);
+
+  sysctlbyname("hw.logicalcpu", &count, &count_len, NULL, 0);
+
+  return count;
+}
+
+#else
+
+// Assume some kind of Linux
 #include <sys/sysinfo.h>
-#include "nm.h"
+
+int get_cpu_cores()
+{
+  return get_nprocs_conf();
+}
+  
+#endif
+
 void hey() { printf("Heyeye!!!!!\n"); }
 int add(int a, int b) { return a + b; }
 Matrix* init() {
@@ -115,7 +142,7 @@ Matrix* mat_add_threaded(Matrix* m1, Matrix* m2) {
 	Matrix* sum = create(r1, c1);
 	int i = 0;
 	int j = 0;
-	int NUM_THREADS = get_nprocs_conf();
+	int NUM_THREADS = get_cpu_cores();
 	pthread_t* threads =
 	    (pthread_t*)malloc(NUM_THREADS * sizeof(pthread_t));
 	AddArgs* add_args = (AddArgs*)malloc(NUM_THREADS * sizeof(AddArgs));
