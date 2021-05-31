@@ -1,0 +1,7 @@
+# action.yml
+
+name: 'Build and lightly test tiny_mat'
+
+runs:
+  using: 'docker'
+  image: 'test.dockerfile'
